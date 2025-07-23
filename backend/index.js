@@ -1,22 +1,16 @@
 const dotenv=require('dotenv')
 dotenv.config()
 const express = require('express');
-const TelegramBot = require('node-telegram-bot-api');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Telegram Bot
-const bot = new TelegramBot(process.env.TELEGRAM_TOKEN, { polling: true });
-
-// Log incoming messages
-bot.on('message', (msg) => {
-    const chatId = msg.chat.id;
-    console.log("Received message:", msg.text || "non-text (maybe a file)");
-
-    bot.sendMessage(chatId, "Hi! I'm your file organizer bot 🗂️");
-});
-
+const PORT = process.env.PORT || 4000;
+const connectDB=require('./config/db')
+const bot=require('./config/bot')
+const cors=require('cors')
+connectDB()
+bot()
+app.use(cors())
+const messageRoutes = require('./routes/messages');
+app.use('/api/messages', messageRoutes);
 // Basic express route
 app.get('/', (req, res) => {
     res.send('Sortify backend is running');
